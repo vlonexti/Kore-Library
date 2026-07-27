@@ -1,0 +1,21 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Mirrors the KORE_USE_EXTERNAL_DEPS branch the package was built with. When it
+# was built against vcpkg's imgui/minhook, consumers need them resolved too.
+if(@KORE_USE_EXTERNAL_DEPS@)
+    find_dependency(imgui CONFIG)
+    find_dependency(minhook CONFIG)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/KoreLibraryTargets.cmake")
+
+# `Kore::Library` is the name used throughout the docs and examples. The export
+# set produces `Kore::KoreLibrary`, so alias it for consumers of the installed
+# package.
+if(TARGET Kore::KoreLibrary AND NOT TARGET Kore::Library)
+    add_library(Kore::Library ALIAS Kore::KoreLibrary)
+endif()
+
+check_required_components(KoreLibrary)

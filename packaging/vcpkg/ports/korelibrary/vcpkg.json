@@ -1,0 +1,68 @@
+{
+  "name": "korelibrary",
+  "version": "0.1.0",
+  "description": "Internal menu framework for Windows games: memory scanning, hooking, and an ImGui overlay with OpenGL/D3D9/D3D11 backends.",
+  "homepage": "https://github.com/vlonexti/Kore-Library",
+  "license": "MIT",
+  "supports": "windows & !uwp & !arm",
+  "dependencies": [
+    "minhook",
+    {
+      "name": "imgui",
+      "default-features": false,
+      "features": [
+        "win32-binding"
+      ]
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+  "default-features": [
+    "d3d11",
+    "opengl"
+  ],
+  "features": {
+    "opengl": {
+      "description": "OpenGL overlay backend (hooks wglSwapBuffers)",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "default-features": false,
+          "features": [
+            "opengl3-binding"
+          ]
+        }
+      ]
+    },
+    "d3d11": {
+      "description": "Direct3D 11 overlay backend (hooks IDXGISwapChain::Present)",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "default-features": false,
+          "features": [
+            "dx11-binding"
+          ]
+        }
+      ]
+    },
+    "d3d9": {
+      "description": "Direct3D 9 overlay backend (hooks IDirect3DDevice9::EndScene)",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "default-features": false,
+          "features": [
+            "dx9-binding"
+          ]
+        }
+      ]
+    }
+  }
+}
