@@ -193,6 +193,10 @@ target_compile_definitions(KoreLibrary PUBLIC
 
 if(MSVC)
     target_compile_options(KoreLibrary PRIVATE /W4 /permissive- /MP)
+    # Our sources are UTF-8. Without this MSVC decodes them in the system
+    # codepage, which mangles any non-ASCII character in a string literal.
+    # PUBLIC so payloads compiled against us get the same treatment.
+    target_compile_options(KoreLibrary PUBLIC /utf-8)
 endif()
 
 if(KORE_BUILD_EXAMPLES)

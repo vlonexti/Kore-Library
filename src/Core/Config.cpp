@@ -36,7 +36,7 @@ bool Config::Load() {
 
     std::ifstream file(m_path);
     if (!file.is_open()) {
-        KORE_TRACE("No config at {} yet — starting from defaults", m_path);
+        KORE_TRACE("No config at {} yet - starting from defaults", m_path);
         return false;
     }
 

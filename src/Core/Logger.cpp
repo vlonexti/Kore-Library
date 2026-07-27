@@ -73,27 +73,36 @@ std::filesystem::path KoreDataDirectory() {
 
 void Logger::Init(std::string_view name, bool allocConsole) {
     auto& state = State();
-    std::scoped_lock lock(state.mutex);
-    if (state.active)
-        return;
+    std::filesystem::path path;
 
-    if (allocConsole) {
-        // If the game already has a console we attach to it rather than
-        // stacking a second, orphaned window on top.
-        if (::GetConsoleWindow() == nullptr && ::AllocConsole()) {
-            state.ownsConsole = true;
-            const std::string title = std::string(name) + " — KoreLibrary";
-            ::SetConsoleTitleA(title.c_str());
+    // Scoped deliberately: Write() takes the same mutex, and it is not
+    // recursive. Holding it across the banner call below throws system_error,
+    // which surfaces as an abort during startup.
+    {
+        std::scoped_lock lock(state.mutex);
+        if (state.active)
+            return;
+
+        if (allocConsole) {
+            // If the game already has a console we attach to it rather than
+            // stacking a second, orphaned window on top.
+            if (::GetConsoleWindow() == nullptr && ::AllocConsole()) {
+                state.ownsConsole = true;
+                // ASCII only: SetConsoleTitleA reinterprets UTF-8 bytes in the
+                // console codepage, which turns anything fancier into mojibake.
+                const std::string title = std::string(name) + " - KoreLibrary";
+                ::SetConsoleTitleA(title.c_str());
+            }
+            freopen_s(&state.console, "CONOUT$", "w", stdout);
         }
-        freopen_s(&state.console, "CONOUT$", "w", stdout);
+
+        path = KoreDataDirectory() / (std::string(name) + ".log");
+        state.file.open(path, std::ios::out | std::ios::trunc);
+
+        state.active = true;
     }
 
-    const auto path = KoreDataDirectory() / (std::string(name) + ".log");
-    state.file.open(path, std::ios::out | std::ios::trunc);
-
-    state.active = true;
-
-    Write(LogLevel::Info, std::format("KoreLibrary attached — logging to {}", path.string()));
+    Write(LogLevel::Info, std::format("KoreLibrary attached - logging to {}", path.string()));
 }
 
 void Logger::Shutdown() {

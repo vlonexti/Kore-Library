@@ -29,6 +29,47 @@ ClipCoords Project(const Vec3& world, const Matrix4x4& vp, MatrixLayout layout) 
 
 } // namespace
 
+Matrix4x4 Multiply(const Matrix4x4& a, const Matrix4x4& b) {
+    Matrix4x4 out;
+    for (std::size_t row = 0; row < 4; ++row) {
+        for (std::size_t col = 0; col < 4; ++col) {
+            float sum = 0.0f;
+            for (std::size_t k = 0; k < 4; ++k)
+                sum += a[row * 4 + k] * b[k * 4 + col];
+            out[row * 4 + col] = sum;
+        }
+    }
+    return out;
+}
+
+Matrix4x4 Perspective(float fovYRadians, float aspect, float nearZ, float farZ) {
+    Matrix4x4 out;
+    if (aspect <= 0.0f || farZ <= nearZ)
+        return out;
+
+    const float f = 1.0f / std::tan(fovYRadians * 0.5f);
+
+    out[0]  = f / aspect;
+    out[5]  = f;
+    out[10] = farZ / (farZ - nearZ);
+    out[11] = -(farZ * nearZ) / (farZ - nearZ);
+    out[14] = 1.0f;   // copies view-space z into clip w, giving the perspective divide
+    return out;
+}
+
+Matrix4x4 LookAt(const Vec3& eye, const Vec3& target, const Vec3& up) {
+    const Vec3 zAxis = (target - eye).Normalized();
+    const Vec3 xAxis = up.Cross(zAxis).Normalized();
+    const Vec3 yAxis = zAxis.Cross(xAxis);
+
+    Matrix4x4 out;
+    out[0]  = xAxis.x; out[1]  = xAxis.y; out[2]  = xAxis.z; out[3]  = -xAxis.Dot(eye);
+    out[4]  = yAxis.x; out[5]  = yAxis.y; out[6]  = yAxis.z; out[7]  = -yAxis.Dot(eye);
+    out[8]  = zAxis.x; out[9]  = zAxis.y; out[10] = zAxis.z; out[11] = -zAxis.Dot(eye);
+    out[15] = 1.0f;
+    return out;
+}
+
 float ClipW(const Vec3& world, const Matrix4x4& viewProjection, MatrixLayout layout) {
     return Project(world, viewProjection, layout).w;
 }

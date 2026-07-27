@@ -62,9 +62,13 @@ void FeatureManager::AttachAll() {
             feature->SetHotkey(hotkey);
 
         // Restore persisted toggles last, so OnEnable sees a fully attached
-        // feature.
-        if (feature->Toggleable() && config.GetBool(EnabledKey(*feature), false))
-            feature->SetEnabled(true);
+        // feature. The fallback is whatever state OnAttach left the feature in,
+        // which is how a feature opts into being on by default; a saved setting
+        // always wins over that.
+        if (feature->Toggleable()) {
+            const bool defaultEnabled = feature->Enabled();
+            feature->SetEnabled(config.GetBool(EnabledKey(*feature), defaultEnabled));
+        }
     }
 
     KORE_INFO("{} feature(s) attached", m_features.size());

@@ -33,7 +33,7 @@ void Run(HMODULE self, StartupOptions options) {
     if (!options.waitForModule.empty()) {
         KORE_INFO("Waiting for module '{}'...", options.waitForModule);
         if (!Memory::Module::WaitFor(options.waitForModule, options.waitTimeoutMs)) {
-            KORE_ERROR("Required module never appeared — aborting");
+            KORE_ERROR("Required module never appeared - aborting");
             Logger::Shutdown();
             ::FreeLibraryAndExitThread(self, 1);
         }
@@ -43,7 +43,7 @@ void Run(HMODULE self, StartupOptions options) {
     overlay.SetMenuKey(options.menuKey);
 
     if (!overlay.Initialize(options.backend)) {
-        KORE_ERROR("Overlay initialisation failed — aborting");
+        KORE_ERROR("Overlay initialisation failed - aborting");
         Hooks::Shutdown();
         Logger::Shutdown();
         ::FreeLibraryAndExitThread(self, 1);

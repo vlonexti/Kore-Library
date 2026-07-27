@@ -34,6 +34,19 @@ struct Matrix4x4 {
 
 static_assert(sizeof(Matrix4x4) == 64, "Matrix4x4 must be 16 contiguous floats");
 
+/// Row-major matrix product: C[r][c] = sum(A[r][k] * B[k][c]).
+///
+/// Matches the convention `WorldToScreen(..., MatrixLayout::RowMajor)` expects,
+/// so `Multiply(projection, view)` gives a usable view-projection matrix.
+[[nodiscard]] Matrix4x4 Multiply(const Matrix4x4& a, const Matrix4x4& b);
+
+/// Left-handed perspective projection, row-major.
+/// `fovYRadians` is the vertical field of view.
+[[nodiscard]] Matrix4x4 Perspective(float fovYRadians, float aspect, float nearZ, float farZ);
+
+/// Left-handed look-at view matrix, row-major.
+[[nodiscard]] Matrix4x4 LookAt(const Vec3& eye, const Vec3& target, const Vec3& up);
+
 enum class MatrixLayout {
     /// Row-major — Source, Unity, and most engines that expose a
     /// "view-projection" matrix directly. Try this first.
