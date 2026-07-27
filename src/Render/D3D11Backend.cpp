@@ -10,6 +10,12 @@
 #include <d3d11.h>
 #include <dxgi.h>
 
+// Declared here rather than only in CMake so the dependency travels with the
+// object file. vcpkg's MSBuild integration links the packages' .lib files but
+// has no way to know about the Windows system libs a package needs.
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dxgi.lib")
+
 namespace Kore::Render {
 namespace {
 

@@ -8,6 +8,9 @@
 
 #include <Windows.h>
 
+// See the note in D3D11Backend.cpp — keeps MSBuild consumers linking cleanly.
+#pragma comment(lib, "opengl32.lib")
+
 namespace Kore::Render {
 namespace {
 

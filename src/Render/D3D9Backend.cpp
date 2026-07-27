@@ -9,6 +9,9 @@
 #include <Windows.h>
 #include <d3d9.h>
 
+// See the note in D3D11Backend.cpp — keeps MSBuild consumers linking cleanly.
+#pragma comment(lib, "d3d9.lib")
+
 namespace Kore::Render {
 namespace {
 
