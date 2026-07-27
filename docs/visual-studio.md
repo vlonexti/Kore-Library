@@ -80,6 +80,25 @@ KORE_ENTRY(options) {
 **`cannot open source file "Kore.hpp"`** — the include is
 `<Kore/Kore.hpp>`, not `<Kore.hpp>`. The `Kore/` prefix is part of the path.
 
+**`cannot open source file "Kore/Kore.hpp"`** with the include spelled
+correctly — the package isn't installed for the triplet your project resolves
+to. With no `<VcpkgTriplet>` set, an `x64` project defaults to `x64-windows`
+(dynamic), and this package is installed as `x64-windows-static`. Set the
+triplet as above. Check what you actually have with:
+
+```bash
+vcpkg list korelibrary
+```
+
+**`The following files are already installed ... and are in conflict`** — two
+packages produce the same library file name. A separate `kore-library` port also
+installs `lib/KoreLibrary.lib`, so the two cannot coexist in one triplet. Either
+use a triplet the other package doesn't occupy (the static ones), or remove it:
+
+```bash
+vcpkg remove kore-library:x64-windows
+```
+
 **`unresolved external symbol __std_find_first_not_of_trivial_pos_1`** (or a
 similar `__std_*` symbol) — toolset mismatch. The package was built by vcpkg
 with a newer MSVC than your project's Platform Toolset, and the newer STL
