@@ -19,42 +19,61 @@ applies to every solution you open.
 
 ## Per-project settings
 
-Three settings, because the default vcpkg triplet is dynamic and a payload
-wants static linkage.
+vcpkg's MSBuild integration derives the triplet from your platform, and
+**defaults to the dynamic one** — an `x64` project resolves to `x64-windows`.
+This package is installed as `x64-windows-static`, so out of the box the header
+is not on the include path. That is the whole reason a correct
+`#include <Kore/Kore.hpp>` can still fail.
 
-**Project → Properties**, with *Configuration* set to **All Configurations** and
-*Platform* to the one you're targeting:
+**Project → Properties**, *Configuration* = **All Configurations**, *Platform* =
+the one you're targeting:
 
 | Where | Setting | Value |
 |---|---|---|
-| General | Platform Toolset | must match the toolset vcpkg built with (`v145` here) |
+| **vcpkg** | **Use Static Libraries** | **Yes** |
+| C/C++ → Code Generation | Runtime Library | `/MTd` for Debug, `/MT` for Release |
 | C/C++ → Language | C++ Language Standard | ISO C++20 |
-| C/C++ → Code Generation | Runtime Library | Multi-threaded (`/MT`), or `/MTd` for Debug |
-| vcpkg | Triplet | `x64-windows-static` (or `x86-windows-static`) |
 | General | Configuration Type | Dynamic Library (.dll) |
 
-Or edit the `.vcxproj` directly:
+"Use Static Libraries" appends `-static` to the derived triplet, which is why
+you don't have to type the triplet out. Runtime Library is the one setting that
+must be changed per configuration, since Debug and Release differ.
+
+Platform Toolset only matters if you've pinned an old one — the default is
+already correct.
+
+Equivalent `.vcxproj` edit:
 
 ```xml
 <PropertyGroup Label="Vcpkg">
   <VcpkgEnabled>true</VcpkgEnabled>
-  <VcpkgTriplet>x64-windows-static</VcpkgTriplet>
-</PropertyGroup>
-
-<PropertyGroup Label="Configuration">
-  <ConfigurationType>DynamicLibrary</ConfigurationType>
-  <PlatformToolset>v145</PlatformToolset>
+  <VcpkgUseStatic>true</VcpkgUseStatic>
 </PropertyGroup>
 
 <ItemDefinitionGroup>
   <ClCompile>
     <LanguageStandard>stdcpp20</LanguageStandard>
-    <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
   </ClCompile>
 </ItemDefinitionGroup>
 ```
 
-That's it. `#include <Kore/Kore.hpp>` and build.
+`<VcpkgTriplet>x64-windows-static</VcpkgTriplet>` works too and is more explicit;
+the checkbox is fewer clicks.
+
+## IntelliSense vs the compiler
+
+vcpkg contributes its headers through **`ExternalIncludePath`**, not
+`AdditionalIncludeDirectories`. IntelliSense caches that aggressively, so the
+red squiggle can survive the fix.
+
+Errors starting **`E`** (`E1696: cannot open source file`) come from
+IntelliSense. Errors starting **`C`** (`C1083: Cannot open include file`) come
+from the compiler. Only the second kind means the build is actually broken.
+
+If the squiggle persists after changing the settings: **Build → Rebuild**, and
+if it's still there, close and reopen the solution to force IntelliSense to
+re-scan. Judge the result by the Output window, not the squiggle.
 
 ## Minimal payload
 
