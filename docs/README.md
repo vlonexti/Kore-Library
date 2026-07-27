@@ -7,6 +7,9 @@ An internal menu framework for Windows games, in C++20.
 | Page | What's in it |
 |---|---|
 | [Getting started](getting-started.md) | Build, inject, write your first feature |
+| [Visual Studio](visual-studio.md) | Global vcpkg setup so any project can just `#include <Kore/Kore.hpp>` |
+| **[API reference](api-reference.md)** | **Every public call explained, with what each piece of a chain like `Memory::Module::Main().Base()` means** |
+| **[Building an ESP](esp-guide.md)** | **End to end: finding the matrix, entity list and offsets in an unknown game, then wiring them in** |
 | [Swed64 vs KoreLibrary](swed64-vs-kore.md) | What changes when you move from Swed64, with an API mapping table |
 | [Memory](memory.md) | Signature scanning, patching, pointer chains, freezing |
 | [Hooking](hooking.md) | Detours, vtable hooks, input |

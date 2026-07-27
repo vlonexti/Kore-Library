@@ -29,6 +29,9 @@ the backend is chosen at runtime.
 Full docs live in [`docs/`](docs/README.md):
 
 - [Getting started](docs/getting-started.md) — build, inject, first feature
+- [API reference](docs/api-reference.md) — every call explained
+- [Building an ESP](docs/esp-guide.md) — finding offsets in an unknown game and wiring them in
+- [Visual Studio](docs/visual-studio.md) — global vcpkg setup
 - [Swed64 vs KoreLibrary](docs/swed64-vs-kore.md) — API mapping if you're coming from Swed64
 - [Memory](docs/memory.md) · [Hooking](docs/hooking.md) · [Rendering & ESP](docs/rendering.md) · [Features](docs/features.md)
 - [Troubleshooting](docs/troubleshooting.md)
@@ -45,6 +48,9 @@ vcpkg install korelibrary --triplet x64-windows-static
 find_package(KoreLibrary CONFIG REQUIRED)
 target_link_libraries(MyPayload PRIVATE Kore::Library)
 ```
+
+With `vcpkg integrate install`, MSBuild projects need no CMake at all — see
+[docs/visual-studio.md](docs/visual-studio.md).
 
 Backends are vcpkg features — `korelibrary[opengl,d3d9,d3d11]`. See
 [packaging/vcpkg](packaging/vcpkg/README.md).
