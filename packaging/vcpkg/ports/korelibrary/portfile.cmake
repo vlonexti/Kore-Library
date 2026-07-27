@@ -4,7 +4,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO vlonexti/Kore-Library
     REF "v${VERSION}"
-    SHA512 0
+    SHA512 3c6dd7c3e6143d4515bcb2275e64fc8a556ff5cf8f7d58b10e224dded05e86c9492ac6a11d5239db37a1fabf6dbf3c34b272658013535aed62104d154d4c1354
     HEAD_REF main
 )
 

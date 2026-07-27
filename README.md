@@ -15,14 +15,41 @@ the backend is chosen at runtime.
 
 | Area | What you get |
 |---|---|
-| `Kore::Memory` | Module lookup, IDA-style signature scanning, RIP-relative resolution, pointer chains, revertible byte patches |
+| `Kore::Memory` | Module lookup, IDA-style signature scanning, RIP-relative resolution, validated pointer chains, revertible byte patches, string/blob reads, value freezing |
 | `Kore::Hooks` | MinHook-backed trampoline detours, vtable hooks, window-procedure hook |
-| `Kore::Render` | Overlay with OpenGL and D3D11 backends, ImGui context lifecycle, safe teardown |
+| `Kore::Render` | Overlay with OpenGL, D3D9 and D3D11 backends detected at runtime, ImGui lifecycle, safe teardown |
+| `Kore::Draw` | ESP primitives — corner boxes, health bars, tracers, outlined text, 3D wireframes |
+| `Kore::Math` | `Vec2/3/4`, `Matrix4x4`, world-to-screen with both matrix layouts |
 | `Kore::Feature` | Registerable feature objects with lifecycle callbacks, hotkeys, persisted toggles |
 | `Kore::Menu` | Tabbed menu window driven by your registered features |
 | `Kore::Config` | Flat key/value settings in `%LOCALAPPDATA%\KoreLibrary` |
 
-## Building
+## Documentation
+
+Full docs live in [`docs/`](docs/README.md):
+
+- [Getting started](docs/getting-started.md) — build, inject, first feature
+- [Swed64 vs KoreLibrary](docs/swed64-vs-kore.md) — API mapping if you're coming from Swed64
+- [Memory](docs/memory.md) · [Hooking](docs/hooking.md) · [Rendering & ESP](docs/rendering.md) · [Features](docs/features.md)
+- [Troubleshooting](docs/troubleshooting.md)
+
+## Install
+
+Via vcpkg:
+
+```bash
+vcpkg install korelibrary --triplet x64-windows-static
+```
+
+```cmake
+find_package(KoreLibrary CONFIG REQUIRED)
+target_link_libraries(MyPayload PRIVATE Kore::Library)
+```
+
+Backends are vcpkg features — `korelibrary[opengl,d3d9,d3d11]`. See
+[packaging/vcpkg](packaging/vcpkg/README.md).
+
+## Building from source
 
 Needs CMake 3.21+, MSVC (VS 2022), and network access on the first configure —
 ImGui and MinHook are pulled in via `FetchContent`.
@@ -40,9 +67,11 @@ Output: `build/examples/barony/Release/BaronyMenu.dll`.
 
 | Option | Default | Notes |
 |---|---|---|
-| `KORE_BACKEND_OPENGL` | ON | wglSwapBuffers hook |
-| `KORE_BACKEND_D3D11` | ON | IDXGISwapChain::Present hook |
+| `KORE_BACKEND_OPENGL` | ON | `wglSwapBuffers` hook |
+| `KORE_BACKEND_D3D11` | ON | `IDXGISwapChain::Present` hook |
+| `KORE_BACKEND_D3D9` | ON | `IDirect3DDevice9::EndScene` hook |
 | `KORE_GL_LEGACY` | OFF | Use the fixed-function GL2 ImGui backend. Turn on for pre-GL3 games if the overlay renders as garbage. |
+| `KORE_USE_EXTERNAL_DEPS` | OFF | Find ImGui/MinHook via `find_package` instead of fetching them. The vcpkg port turns this on. |
 | `KORE_BUILD_EXAMPLES` | ON | Builds the example payload |
 
 ## Writing a payload
