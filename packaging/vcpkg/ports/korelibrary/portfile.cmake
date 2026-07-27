@@ -1,10 +1,10 @@
-vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
+﻿vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO vlonexti/Kore-Library
     REF "v${VERSION}"
-    SHA512 3d2f55139c2c920f7d5a90b94b8d89e89e7b427d9beb60b0694280756b3d10e76d1372a72566ca6cc281dc0d5b4b6ea4ccc21a3f88d95d9604dfcb58fd0b1dd3
+    SHA512 f5f1298764c459013497f80d053702b62542564541928a41a50f3567fbff5ffe22598e7feee5516ab979f564dbac78df671cad3f0dcccce4cd7855f2fa5d2469
     HEAD_REF main
 )
 
